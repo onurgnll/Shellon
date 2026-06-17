@@ -40,12 +40,6 @@ Connection data is stored only on your computer — nothing is sent to the cloud
 
 ---
 
-## Screenshots
-
-> Add images to `assets/screenshots/` and link them here.
-
----
-
 ## Shortcuts
 
 | Action | Shortcut / Behavior |

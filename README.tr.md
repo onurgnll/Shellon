@@ -40,12 +40,6 @@ Bağlantı bilgileri yalnızca bilgisayarınızda saklanır; buluta gönderilmez
 
 ---
 
-## Ekran görüntüleri
-
-> Ekran görüntüsü eklemek için `assets/screenshots/` klasörüne görseller koyup buraya bağlayabilirsiniz.
-
----
-
 ## Kısayollar
 
 | İşlem | Kısayol / Davranış |
