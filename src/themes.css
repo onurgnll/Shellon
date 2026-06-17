@@ -1,0 +1,87 @@
+/* App UI Themes */
+
+[data-app-theme="midnight"] {
+  --bg-primary: #0a0e1a;
+  --bg-secondary: #111827;
+  --bg-tertiary: #1a2236;
+  --bg-hover: #243049;
+  --bg-active: #3b82f626;
+  --border: #243049;
+  --border-light: #1a2236;
+  --text-primary: #e8edf7;
+  --text-secondary: #94a3b8;
+  --text-muted: #64748b;
+  --accent: #60a5fa;
+  --accent-hover: #93c5fd;
+}
+
+[data-app-theme="nord"] {
+  --bg-primary: #2e3440;
+  --bg-secondary: #3b4252;
+  --bg-tertiary: #434c5e;
+  --bg-hover: #4c566a;
+  --bg-active: #88c0d026;
+  --border: #4c566a;
+  --border-light: #434c5e;
+  --text-primary: #eceff4;
+  --text-secondary: #d8dee9;
+  --text-muted: #81a1c1;
+  --accent: #88c0d0;
+  --accent-hover: #8fbcbb;
+  --success: #a3be8c;
+  --danger: #bf616a;
+  --warning: #ebcb8b;
+  --purple: #b48ead;
+}
+
+[data-app-theme="dracula"] {
+  --bg-primary: #282a36;
+  --bg-secondary: #1e1f29;
+  --bg-tertiary: #343746;
+  --bg-hover: #44475a;
+  --bg-active: #bd93f926;
+  --border: #44475a;
+  --border-light: #343746;
+  --text-primary: #f8f8f2;
+  --text-secondary: #bfbfbf;
+  --text-muted: #6272a4;
+  --accent: #bd93f9;
+  --accent-hover: #d4b4ff;
+  --success: #50fa7b;
+  --danger: #ff5555;
+  --warning: #f1fa8c;
+  --purple: #bd93f9;
+}
+
+[data-app-theme="light"] {
+  --bg-primary: #ffffff;
+  --bg-secondary: #f6f8fa;
+  --bg-tertiary: #eef1f5;
+  --bg-hover: #e4e9ef;
+  --bg-active: #0969da1a;
+  --border: #d0d7de;
+  --border-light: #e8ecf0;
+  --text-primary: #1f2328;
+  --text-secondary: #57606a;
+  --text-muted: #8b949e;
+  --accent: #0969da;
+  --accent-hover: #0550ae;
+  --success: #1a7f37;
+  --danger: #cf222e;
+  --warning: #9a6700;
+  --purple: #8250df;
+  --shadow: 0 8px 24px rgba(0,0,0,0.12);
+}
+
+[data-app-theme="light"] .titlebar-btn-close:hover {
+  background: var(--danger);
+  color: white;
+}
+
+[data-app-theme="light"] .panel-snippet-card,
+[data-app-theme="light"] .panel-history-item,
+[data-app-theme="light"] .home-card,
+[data-app-theme="light"] .snippet-item,
+[data-app-theme="light"] .key-item {
+  background: #ffffff;
+}

@@ -1,0 +1,606 @@
+<!DOCTYPE html>
+<html lang="tr">
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <meta http-equiv="Content-Security-Policy" content="default-src 'self'; script-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net; style-src 'self' 'unsafe-inline' https://cdn.jsdelivr.net https://fonts.googleapis.com; font-src https://fonts.gstatic.com; connect-src 'self'">
+  <title>Shellon</title>
+  <link rel="icon" type="image/png" href="../assets/appicon.png">
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600;700&family=Fira+Code:wght@400;500&family=JetBrains+Mono:wght@400;500&family=Source+Code+Pro:wght@400;500&family=IBM+Plex+Mono:wght@400;500&family=Roboto+Mono:wght@400;500&display=swap" rel="stylesheet">
+  <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/css/xterm.css">
+  <link rel="stylesheet" href="styles.css">
+  <link rel="stylesheet" href="themes.css">
+</head>
+<body>
+  <!-- Title Bar -->
+  <header class="titlebar" id="titlebar">
+    <div class="titlebar-drag">
+      <div class="titlebar-logo">
+        <img src="../assets/appicon.png" alt="Shellon" width="20" height="20">
+        <span>Shellon</span>
+      </div>
+    </div>
+    <div class="titlebar-controls">
+      <button class="titlebar-btn" id="btn-minimize" title="Küçült">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect y="5" width="12" height="1.5" fill="currentColor"/></svg>
+      </button>
+      <button class="titlebar-btn" id="btn-maximize" title="Büyüt">
+        <svg width="12" height="12" viewBox="0 0 12 12"><rect x="1" y="1" width="10" height="10" stroke="currentColor" stroke-width="1.5" fill="none"/></svg>
+      </button>
+      <button class="titlebar-btn titlebar-btn-close" id="btn-close" title="Kapat">
+        <svg width="12" height="12" viewBox="0 0 12 12"><path d="M1 1l10 10M11 1L1 11" stroke="currentColor" stroke-width="1.5"/></svg>
+      </button>
+    </div>
+  </header>
+
+  <div class="app-container">
+    <!-- Sidebar -->
+    <aside class="sidebar" id="sidebar">
+      <div class="sidebar-header">
+        <div class="search-box">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="11" cy="11" r="8"/><path d="M21 21l-4.35-4.35"/>
+          </svg>
+          <input type="text" id="search-input" placeholder="Bağlantı ara...">
+        </div>
+        <div class="sidebar-actions">
+          <button class="icon-btn" id="btn-new-folder" title="Yeni Klasör">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+              <line x1="12" y1="11" x2="12" y2="17"/><line x1="9" y1="14" x2="15" y2="14"/>
+            </svg>
+          </button>
+          <button class="icon-btn primary" id="btn-new-connection" title="Yeni Bağlantı">
+            <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <nav class="sidebar-nav">
+        <div class="nav-section">
+          <div class="nav-section-title">HOSTS</div>
+          <button type="button" class="sidebar-root-nav" id="sidebar-root-nav" data-folder-id="">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <path d="M3 9l9-7 9 7v11a2 2 0 01-2 2H5a2 2 0 01-2-2z"/>
+              <polyline points="9 22 9 12 15 12 15 22"/>
+            </svg>
+            <span>Tüm Bağlantılar</span>
+          </button>
+          <div class="root-drop-zone" id="root-drop-zone">↓ Anasayfaya bırak</div>
+          <div id="hosts-tree" class="hosts-tree"></div>
+        </div>
+      </nav>
+
+      <div class="sidebar-footer">
+        <button class="sidebar-footer-btn" id="btn-snippets" title="Snippets">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+          <span>Snippets</span>
+        </button>
+        <button class="sidebar-footer-btn" id="btn-keys" title="SSH Anahtarları">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <path d="M21 2l-2 2m-7.61 7.61a5.5 5.5 0 11-7.778 7.778 5.5 5.5 0 017.777-7.777zm0 0L15.5 7.5m0 0l3 3L22 7l-3-3m-3.5 3.5L19 4"/>
+          </svg>
+          <span>Anahtarlar</span>
+        </button>
+        <button class="sidebar-footer-btn" id="btn-settings" title="Ayarlar">
+          <svg width="18" height="18" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <circle cx="12" cy="12" r="3"/>
+            <path d="M19.4 15a1.65 1.65 0 00.33 1.82l.06.06a2 2 0 010 2.83 2 2 0 01-2.83 0l-.06-.06a1.65 1.65 0 00-1.82-.33 1.65 1.65 0 00-1 1.51V21a2 2 0 01-4 0v-.09A1.65 1.65 0 009 19.4a1.65 1.65 0 00-1.82.33l-.06.06a2 2 0 01-2.83 0 2 2 0 010-2.83l.06-.06A1.65 1.65 0 004.68 15a1.65 1.65 0 00-1.51-1H3a2 2 0 010-4h.09A1.65 1.65 0 004.6 9a1.65 1.65 0 00-.33-1.82l-.06-.06a2 2 0 012.83-2.83l.06.06A1.65 1.65 0 009 4.68a1.65 1.65 0 001-1.51V3a2 2 0 014 0v.09a1.65 1.65 0 001 1.51 1.65 1.65 0 001.82-.33l.06-.06a2 2 0 012.83 2.83l-.06.06A1.65 1.65 0 0019.4 9a1.65 1.65 0 001.51 1H21a2 2 0 010 4h-.09a1.65 1.65 0 00-1.51 1z"/>
+          </svg>
+          <span>Ayarlar</span>
+        </button>
+      </div>
+    </aside>
+
+    <!-- Main Content -->
+    <main class="main-content">
+      <!-- Tab Bar -->
+      <div class="tab-bar" id="tab-bar">
+        <div class="tabs" id="tabs"></div>
+        <div class="tab-actions">
+          <button class="icon-btn sm" id="btn-toggle-snippets" title="Snippets Paneli">
+            <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+
+      <!-- Terminal Area -->
+      <div class="terminal-area" id="terminal-area">
+        <div class="content-header" id="content-header">
+          <div class="home-breadcrumb" id="home-breadcrumb">
+            <button class="breadcrumb-item active" data-folder-id="">Anasayfa</button>
+          </div>
+          <div class="home-actions">
+            <button class="btn secondary sm" id="welcome-new-folder">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/>
+              </svg>
+              Klasör
+            </button>
+            <button class="btn primary sm" id="welcome-new-connection">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+              </svg>
+              Bağlantı
+            </button>
+          </div>
+        </div>
+        <div class="content-body" id="content-body">
+          <div class="home-view" id="home-view">
+            <div class="home-grid" id="home-grid"></div>
+          </div>
+          <div class="terminals-container" id="terminals-container" style="display:none"></div>
+        </div>
+      </div>
+
+      <!-- Bottom Panel (SFTP / Port Forward) -->
+      <div class="bottom-panel" id="bottom-panel" style="display:none">
+        <div class="panel-resize-handle" id="panel-resize-handle" title="Yüksekliği ayarla"></div>
+        <div class="panel-tabs">
+          <button class="panel-tab active" data-panel="sftp">SFTP</button>
+          <button class="panel-tab" data-panel="forward">Port Yönlendirme</button>
+          <button class="panel-tab-close" id="btn-close-panel">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+        <div class="panel-content" id="panel-content"></div>
+      </div>
+    </main>
+
+    <!-- Right Panel: Snippets & Command History -->
+    <aside class="right-panel" id="right-panel">
+      <div class="right-panel-header">
+        <div class="right-panel-title">
+          <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+            <polyline points="16 18 22 12 16 6"/><polyline points="8 6 2 12 8 18"/>
+          </svg>
+          <span>Snippets</span>
+        </div>
+        <div class="right-panel-actions">
+          <button class="icon-btn sm" id="btn-panel-add-snippet" title="Yeni Snippet">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="12" y1="5" x2="12" y2="19"/><line x1="5" y1="12" x2="19" y2="12"/>
+            </svg>
+          </button>
+          <button class="icon-btn sm" id="btn-close-right-panel" title="Kapat">
+            <svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+              <line x1="18" y1="6" x2="6" y2="18"/><line x1="6" y1="6" x2="18" y2="18"/>
+            </svg>
+          </button>
+        </div>
+      </div>
+      <div class="right-panel-body">
+        <div class="right-panel-section" id="panel-snippets-list"></div>
+        <div class="right-panel-divider">
+          <span>Son Komutlar</span>
+          <button type="button" class="history-clear-btn" id="btn-clear-command-history" title="Geçmişi temizle">Temizle</button>
+        </div>
+        <div class="right-panel-section right-panel-history" id="panel-command-history"></div>
+      </div>
+    </aside>
+  </div>
+
+  <!-- Connection Modal -->
+  <div class="modal-overlay" id="connection-modal" style="display:none">
+    <div class="modal">
+      <div class="modal-header">
+        <h3 id="connection-modal-title">Yeni Bağlantı</h3>
+        <button class="modal-close" data-close="connection-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="connection-form">
+          <input type="hidden" id="conn-id">
+          <div class="form-row">
+            <div class="form-group">
+              <label for="conn-label">Etiket</label>
+              <input type="text" id="conn-label" placeholder="Örn: Production Server" required>
+            </div>
+            <div class="form-group">
+              <label for="conn-folder">Klasör</label>
+              <select id="conn-folder">
+                <option value="">Anasayfa (klasörsüz)</option>
+              </select>
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group flex-2">
+              <label for="conn-host">Host / IP</label>
+              <input type="text" id="conn-host" placeholder="192.168.1.1 veya example.com" required>
+            </div>
+            <div class="form-group">
+              <label for="conn-port">Port</label>
+              <input type="number" id="conn-port" value="22" min="1" max="65535">
+            </div>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="conn-username">Kullanıcı Adı</label>
+              <input type="text" id="conn-username" placeholder="root" required>
+            </div>
+          </div>
+          <div class="form-group">
+            <label>Kimlik Doğrulama</label>
+            <div class="auth-tabs">
+              <button type="button" class="auth-tab active" data-auth="password">Şifre</button>
+              <button type="button" class="auth-tab" data-auth="key">SSH Anahtarı</button>
+            </div>
+          </div>
+          <div id="auth-password" class="auth-panel">
+            <div class="form-group">
+              <label for="conn-password">Şifre</label>
+              <div class="password-field">
+                <input type="password" id="conn-password" placeholder="••••••••">
+                <button type="button" class="password-toggle" title="Göster" aria-label="Şifreyi göster">
+                  <svg class="icon-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="icon-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div id="auth-key" class="auth-panel" style="display:none">
+            <div class="form-group">
+              <label for="conn-key-select">Kayıtlı Anahtar</label>
+              <select id="conn-key-select">
+                <option value="">Dosyadan seç...</option>
+              </select>
+            </div>
+            <div class="form-group">
+              <label for="conn-key-path">Anahtar Dosyası</label>
+              <div class="input-with-btn">
+                <input type="text" id="conn-key-path" placeholder="C:\Users\...\.ssh\id_rsa" readonly>
+                <button type="button" class="btn secondary sm" id="btn-browse-key">Gözat</button>
+              </div>
+            </div>
+            <div class="form-group">
+              <label for="conn-passphrase">Passphrase (opsiyonel)</label>
+              <div class="password-field">
+                <input type="password" id="conn-passphrase" placeholder="Anahtar parolası">
+                <button type="button" class="password-toggle" title="Göster" aria-label="Şifreyi göster">
+                  <svg class="icon-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                    <circle cx="12" cy="12" r="3"/>
+                  </svg>
+                  <svg class="icon-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                    <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                    <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                    <line x1="1" y1="1" x2="23" y2="23"/>
+                  </svg>
+                </button>
+              </div>
+            </div>
+          </div>
+          <div class="form-group">
+            <label for="conn-notes">Notlar</label>
+            <textarea id="conn-notes" rows="2" placeholder="Bağlantı hakkında notlar..."></textarea>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn danger" id="btn-delete-connection" style="display:none">Sil</button>
+        <div class="modal-footer-right">
+          <button type="button" class="btn secondary" data-close="connection-modal">İptal</button>
+          <button type="button" class="btn primary" id="btn-save-connection">Kaydet</button>
+          <button type="button" class="btn success" id="btn-connect-now">Bağlan</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Folder Modal -->
+  <div class="modal-overlay" id="folder-modal" style="display:none">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 id="folder-modal-title">Yeni Klasör</h3>
+        <button class="modal-close" data-close="folder-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <form id="folder-form">
+          <input type="hidden" id="folder-id">
+          <div class="form-group">
+            <label for="folder-name">Klasör Adı</label>
+            <input type="text" id="folder-name" placeholder="Örn: Production" required>
+          </div>
+          <div class="form-group">
+            <label for="folder-color">Renk</label>
+            <div class="color-picker" id="folder-colors">
+              <button type="button" class="color-option active" data-color="#58a6ff" style="background:#58a6ff"></button>
+              <button type="button" class="color-option" data-color="#3fb950" style="background:#3fb950"></button>
+              <button type="button" class="color-option" data-color="#d29922" style="background:#d29922"></button>
+              <button type="button" class="color-option" data-color="#f85149" style="background:#f85149"></button>
+              <button type="button" class="color-option" data-color="#bc8cff" style="background:#bc8cff"></button>
+              <button type="button" class="color-option" data-color="#f778ba" style="background:#f778ba"></button>
+            </div>
+          </div>
+        </form>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn danger" id="btn-delete-folder" style="display:none">Sil</button>
+        <div class="modal-footer-right">
+          <button type="button" class="btn secondary" data-close="folder-modal">İptal</button>
+          <button type="button" class="btn primary" id="btn-save-folder">Kaydet</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Snippets Modal -->
+  <div class="modal-overlay" id="snippets-modal" style="display:none">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>Snippets</h3>
+        <button class="modal-close" data-close="snippets-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="snippets-toolbar">
+          <button class="btn primary sm" id="btn-new-snippet">+ Yeni Snippet</button>
+        </div>
+        <div id="snippets-list" class="snippets-list"></div>
+        <div id="snippet-editor" class="snippet-editor" style="display:none">
+          <input type="hidden" id="snippet-id">
+          <div class="form-group">
+            <label for="snippet-name">Ad</label>
+            <input type="text" id="snippet-name" placeholder="Örn: Docker logs">
+          </div>
+          <div class="form-group">
+            <label for="snippet-command">Komut</label>
+            <textarea id="snippet-command" rows="4" placeholder="docker logs -f container_name"></textarea>
+          </div>
+          <div class="form-actions">
+            <button class="btn danger sm" id="btn-delete-snippet">Sil</button>
+            <button class="btn primary sm" id="btn-save-snippet">Kaydet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Keys Modal -->
+  <div class="modal-overlay" id="keys-modal" style="display:none">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>SSH Anahtarları</h3>
+        <button class="modal-close" data-close="keys-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <div class="snippets-toolbar">
+          <button class="btn primary sm" id="btn-new-key">+ Anahtar Ekle</button>
+        </div>
+        <div id="keys-list" class="keys-list"></div>
+        <div id="key-editor" class="snippet-editor" style="display:none">
+          <input type="hidden" id="key-id">
+          <div class="form-group">
+            <label for="key-name">Ad</label>
+            <input type="text" id="key-name" placeholder="Örn: GitHub Key">
+          </div>
+          <div class="form-group">
+            <label for="key-path">Dosya Yolu</label>
+            <div class="input-with-btn">
+              <input type="text" id="key-path" readonly>
+              <button type="button" class="btn secondary sm" id="btn-browse-key-file">Gözat</button>
+            </div>
+          </div>
+          <div class="form-actions">
+            <button class="btn danger sm" id="btn-delete-key">Sil</button>
+            <button class="btn primary sm" id="btn-save-key">Kaydet</button>
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Settings Modal -->
+  <div class="modal-overlay" id="settings-modal" style="display:none">
+    <div class="modal modal-lg">
+      <div class="modal-header">
+        <h3>Ayarlar</h3>
+        <button class="modal-close" data-close="settings-modal">&times;</button>
+      </div>
+      <div class="modal-body settings-body">
+        <div class="settings-section">
+          <h4 class="settings-section-title">Uygulama Teması</h4>
+          <div class="form-group">
+            <label for="setting-app-theme">Arayüz Teması</label>
+            <select id="setting-app-theme">
+              <option value="dark">Koyu (Varsayılan)</option>
+              <option value="midnight">Gece Mavisi</option>
+              <option value="nord">Nord</option>
+              <option value="dracula">Dracula</option>
+              <option value="light">Açık</option>
+            </select>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4 class="settings-section-title">Terminal</h4>
+          <div class="form-group">
+            <label for="setting-terminal-theme">Terminal Teması</label>
+            <select id="setting-terminal-theme">
+              <option value="termius">Termius</option>
+              <option value="dracula">Dracula</option>
+              <option value="monokai">Monokai</option>
+              <option value="solarized-dark">Solarized Dark</option>
+              <option value="one-dark">One Dark</option>
+              <option value="gruvbox-dark">Gruvbox Dark</option>
+              <option value="github-dark">GitHub Dark</option>
+              <option value="light">Açık</option>
+            </select>
+          </div>
+          <div class="form-row">
+            <div class="form-group">
+              <label for="setting-font-family">Terminal Fontu</label>
+              <select id="setting-font-family"></select>
+            </div>
+            <div class="form-group">
+              <label for="setting-font-size">Font Boyutu</label>
+              <input type="number" id="setting-font-size" min="10" max="28" value="14">
+            </div>
+          </div>
+          <div class="font-preview-box" id="font-preview-box">
+            <div class="font-preview-label">Önizleme</div>
+            <pre id="font-preview">krkduser@krkdsrv:~$ ls -la
+drwxr-xr-x  5 user user 4096 Jun 15 10:30 projects
+-rw-r--r--  1 user user  220 Jun 15 09:15 .bashrc</pre>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4 class="settings-section-title">Yedekleme</h4>
+          <p class="settings-hint">Klasörler ve sunucu bağlantılarını şifreli yedek olarak dışa/içe aktarın. Export için belirlediğiniz şifreyi güvenli bir yerde saklayın.</p>
+          <div class="import-mode">
+            <label>
+              <input type="radio" name="import-mode" value="merge" checked>
+              Birleştir (mevcut verilerle)
+            </label>
+            <label>
+              <input type="radio" name="import-mode" value="replace">
+              Değiştir (tüm klasör ve hostları sil)
+            </label>
+          </div>
+          <div class="settings-actions">
+            <button type="button" class="btn secondary" id="btn-export-hosts">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="7 10 12 15 17 10"/><line x1="12" y1="15" x2="12" y2="3"/>
+              </svg>
+              Export
+            </button>
+            <button type="button" class="btn primary" id="btn-import-hosts">
+              <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M21 15v4a2 2 0 01-2 2H5a2 2 0 01-2-2v-4"/><polyline points="17 8 12 3 7 8"/><line x1="12" y1="3" x2="12" y2="15"/>
+              </svg>
+              Import
+            </button>
+          </div>
+        </div>
+
+        <div class="settings-section">
+          <h4 class="settings-section-title">Bağlantı</h4>
+          <div class="form-group">
+            <label for="setting-keepalive">Keep-Alive Aralığı (saniye)</label>
+            <input type="number" id="setting-keepalive" min="0" max="300" value="30">
+          </div>
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="setting-confirm-close" checked>
+              Kapatırken onay iste
+            </label>
+          </div>
+          <div class="form-group checkbox-group">
+            <label>
+              <input type="checkbox" id="setting-auto-reconnect">
+              Bağlantı koptuğunda otomatik yeniden bağlan
+            </label>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <button type="button" class="btn primary" id="btn-save-settings">Kaydet</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Backup Password Modal -->
+  <div class="modal-overlay" id="crypto-modal" style="display:none">
+    <div class="modal modal-sm">
+      <div class="modal-header">
+        <h3 id="crypto-modal-title">Yedek Şifresi</h3>
+        <button class="modal-close" data-close="crypto-modal">&times;</button>
+      </div>
+      <div class="modal-body">
+        <p class="settings-hint" id="crypto-modal-hint" style="margin-top:0"></p>
+        <div class="form-group">
+          <label for="crypto-password">Şifre</label>
+          <div class="password-field">
+            <input type="password" id="crypto-password" placeholder="Yedek şifresi" autocomplete="off">
+            <button type="button" class="password-toggle" title="Göster" aria-label="Şifreyi göster">
+              <svg class="icon-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="icon-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+        <div class="form-group" id="crypto-confirm-group">
+          <label for="crypto-password-confirm">Şifre (tekrar)</label>
+          <div class="password-field">
+            <input type="password" id="crypto-password-confirm" placeholder="Şifreyi tekrar girin" autocomplete="off">
+            <button type="button" class="password-toggle" title="Göster" aria-label="Şifreyi göster">
+              <svg class="icon-show" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M1 12s4-8 11-8 11 8 11 8-4 8-11 8-11-8-11-8z"/>
+                <circle cx="12" cy="12" r="3"/>
+              </svg>
+              <svg class="icon-hide" width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2">
+                <path d="M17.94 17.94A10.07 10.07 0 0112 20c-7 0-11-8-11-8a18.45 18.45 0 015.06-5.94"/>
+                <path d="M9.9 4.24A9.12 9.12 0 0112 4c7 0 11 8 11 8a18.5 18.5 0 01-2.16 3.19"/>
+                <line x1="1" y1="1" x2="23" y2="23"/>
+              </svg>
+            </button>
+          </div>
+        </div>
+      </div>
+      <div class="modal-footer">
+        <div class="modal-footer-right">
+          <button type="button" class="btn secondary" data-close="crypto-modal">İptal</button>
+          <button type="button" class="btn primary" id="crypto-modal-confirm">Devam</button>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- Context Menu -->
+  <div class="context-menu" id="context-menu" style="display:none">
+    <button class="context-item" data-action="connect">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M5 12h14M12 5l7 7-7 7"/></svg>
+      Bağlan
+    </button>
+    <button class="context-item" data-action="edit">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M11 4H4a2 2 0 00-2 2v14a2 2 0 002 2h14a2 2 0 002-2v-7"/><path d="M18.5 2.5a2.121 2.121 0 013 3L12 15l-4 1 1-4 9.5-9.5z"/></svg>
+      Düzenle
+    </button>
+    <button class="context-item" data-action="duplicate">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><rect x="9" y="9" width="13" height="13" rx="2"/><path d="M5 15H4a2 2 0 01-2-2V4a2 2 0 012-2h9a2 2 0 012 2v1"/></svg>
+      Kopyala
+    </button>
+    <div class="context-divider"></div>
+    <button class="context-item" data-action="sftp">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M22 19a2 2 0 01-2 2H4a2 2 0 01-2-2V5a2 2 0 012-2h5l2 3h9a2 2 0 012 2z"/></svg>
+      SFTP
+    </button>
+    <button class="context-item" data-action="forward">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="15 3 21 3 21 9"/><line x1="10" y1="14" x2="21" y2="3"/><path d="M18 13v6a2 2 0 01-2 2H5a2 2 0 01-2-2V8a2 2 0 012-2h6"/></svg>
+      Port Yönlendirme
+    </button>
+    <div class="context-divider"></div>
+    <button class="context-item danger" data-action="delete">
+      <svg width="16" height="16" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><polyline points="3 6 5 6 21 6"/><path d="M19 6v14a2 2 0 01-2 2H7a2 2 0 01-2-2V6m3 0V4a2 2 0 012-2h4a2 2 0 012 2v2"/></svg>
+      Sil
+    </button>
+  </div>
+
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/xterm@5.5.0/lib/xterm.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-fit@0.10.0/lib/addon-fit.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/@xterm/addon-web-links@0.11.0/lib/addon-web-links.min.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

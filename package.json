@@ -1,0 +1,48 @@
+{
+  "name": "shellon",
+  "version": "1.0.0",
+  "description": "Modern SSH terminal yöneticisi - Windows masaüstü uygulaması",
+  "main": "electron/main.js",
+  "scripts": {
+    "start": "electron .",
+    "dev": "electron . --dev",
+    "build": "electron-builder --win nsis portable",
+    "build:setup": "electron-builder --win nsis",
+    "build:portable": "electron-builder --win portable"
+  },
+  "author": "Shellon",
+  "license": "MIT",
+  "devDependencies": {
+    "electron": "^33.2.0",
+    "electron-builder": "^26.15.3"
+  },
+  "dependencies": {
+    "electron-store": "^8.2.0",
+    "ssh2": "^1.16.0",
+    "uuid": "^11.0.3"
+  },
+  "build": {
+    "appId": "com.shellon.app",
+    "productName": "Shellon",
+    "icon": "assets/appicon.png",
+    "directories": {
+      "output": "dist"
+    },
+    "win": {
+      "target": [
+        { "target": "nsis", "arch": ["x64"] },
+        { "target": "portable", "arch": ["x64"] }
+      ],
+      "icon": "assets/appicon.png"
+    },
+    "nsis": {
+      "oneClick": false,
+      "perMachine": false,
+      "allowElevation": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "Shellon"
+    }
+  }
+}
